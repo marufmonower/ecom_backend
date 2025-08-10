@@ -23,3 +23,15 @@ class ProductOut(ProductCreate):
     class Config:
         orm_mode = True
         
+class CartItemCreate(BaseModel):
+    user_id: int
+    product_id: int
+    quantity:int
+    
+class CartItemOut(CartItemCreate):
+    id:int
+    
+    class Config:
+        orm_mode = True
+        
+        
