@@ -1,8 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from database import SessionLocal
+from typing import List
 import schemas
 import models
+import crud
 
 router = APIRouter(prefix="/cart", tags=["Cart"])
 
@@ -15,7 +17,7 @@ def get_db():
         db.close()
 
 
-@router.get("/{user_id}")
+@router.get("/{user_id}",response_model=List[schemas.CartItemOut])
 def get_cart_items(user_id: int, db: Session = Depends(get_db)):
     items = db.query(models.CartItem).filter(
         models.CartItem.user_id == user_id).all()

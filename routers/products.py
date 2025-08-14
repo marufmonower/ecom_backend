@@ -1,6 +1,7 @@
 from fastapi import APIRouter,Depends
 from sqlalchemy.orm import Session
 from database import SessionLocal
+from typing import List
 import schemas,crud
 
 router = APIRouter(prefix="/products",tags=["Products"])
@@ -17,6 +18,6 @@ def create(product:schemas.ProductCreate,db:Session=Depends(get_db)):
     return crud.create_product(db,product)
 
 
-@router.get("/",response_model=list[schemas.ProductOut])
+@router.get("/",response_model=List[schemas.ProductOut])
 def read_all(db:Session=Depends(get_db)):
     return crud.get_products(db)
