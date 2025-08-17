@@ -24,7 +24,7 @@ class ProductOut(ProductCreate):
         orm_mode = True
         
 class CartItemCreate(BaseModel):
-    user_id: int
+   # user_id: int
     product_id: int
     quantity:int
     

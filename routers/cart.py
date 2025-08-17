@@ -1,12 +1,17 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException,status
 from sqlalchemy.orm import Session
-from database import SessionLocal
+from fastapi.security import OAuth2PasswordBearer
+from database import SessionLocal,get_db
 from typing import List
+from schemas import CartItemCreate,CartItemOut
 import schemas
 import models
-import crud
+import auth,crud
+
 
 router = APIRouter(prefix="/cart", tags=["Cart"])
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="users/login")
+
 
 
 def get_db():
@@ -25,9 +30,13 @@ def get_cart_items(user_id: int, db: Session = Depends(get_db)):
 
 
 @router.post("/")
-def add_to_cart(user_id: int, product_id: int, quantity: int, db: Session = Depends(get_db)):
+def add_to_cart(item: CartItemCreate,token:str=Depends(oauth2_scheme),db:Session=Depends(get_db)):        #(user_id: int, product_id: int, quantity: int, db: Session = Depends(get_db)):
+    user_id = auth.verify_token(token)
+    if not user_id:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail="Invalid token")
+        
     cart_item = models.CartItem(
-        user_id=user_id, product_id=product_id, quantity=quantity)
+        user_id=user_id, product_id=item.product_id, quantity=item.quantity)
     db.add(cart_item)
     db.commit()
     db.refresh(cart_item)
